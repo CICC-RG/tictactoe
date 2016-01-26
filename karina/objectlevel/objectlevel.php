@@ -48,4 +48,13 @@
 
 	}
 
+
+	abstract class CognitiveTask extends Task {
+
+	}
+
+	abstract class ReasoningTask extends CognitiveTask {
+		
+	}
+
 ?>

@@ -1,6 +1,5 @@
 <?php
-//require_once 'vendors/Gatito.php';
-session_start();
+	session_start();
 	require_once 'objectlevel/views/view_board.php';
 	require_once 'objectlevel/controllers/tictactoeController.php';
 	require_once 'karina/objectlevel/objectlevel.php';
@@ -16,11 +15,13 @@ session_start();
 		$data_controllers->perception($position);
 		$data_controllers->run();
 	}
+
+	if( isset($_GET['reset']) )
+	{
+		$data_controllers->reset();
+	}
 	
 	
 	$data_controllers->showBoard();
-
-
-	//$draw_board = new ViewBoard($data_board->getCells());
 
 ?>

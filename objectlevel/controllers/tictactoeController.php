@@ -32,15 +32,17 @@
 
 			$information = $this->current_perception->getPerception()->getInformation();
 
-
-			if( empty( $board->getData($information[0], $information[1] ) ))
+			
+			if( empty( $board->getData($information[0],  $information[1]) ) )
 			{
 				$this->current_model_of_the_world->getModelOfTheWorld()->setData( $information[0], $information[1], 'X' );
+				//upModelOfTheWorld()->setData( $information[0], $information[1], 'X' );
 				
-				$this->current_model_of_the_world->updateModelOfTheWorld($board);
+				$this->current_model_of_the_world->updateModelOfTheWorld();
 
 				//determinar si gano el jugador
-
+				$verify_winner = new VerifyWinner($this->current_model_of_the_world->getModelOfTheWorld(), 'X');
+				var_dump($verify_winner->run());
 				//jugar maquina
 
 				//daterminar si la maquina gano
@@ -49,11 +51,18 @@
 
 		}
 
+		public function reset()
+		{
+			$this->current_model_of_the_world->getModelOfTheWorld()->create();
+			$this->current_model_of_the_world->updateModelOfTheWorld();
+
+			header("Location: index.php");
+		}
 
 		public function showBoard()
 		{
 			
-			ViewBoard::showBoard($this->current_model_of_the_world->getModelOfTheWorld());
+			ViewBoard::showBoard($this->current_model_of_the_world->getModelOfTheWorld()->getCells());
 		}
 
 

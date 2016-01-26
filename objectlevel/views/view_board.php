@@ -6,11 +6,11 @@
 		{
 		}
 
-		public static function showBoard($modelOfTheWorld)
+		public function showBoard($modelOfTheWorld)
 		{
 
 			$output  = self::header();
-			$output .= self::body($modelOfTheWorld->getCells());
+			$output .= self::body($modelOfTheWorld);
 			$output .= self::footer();
 			echo $output;
 		}
