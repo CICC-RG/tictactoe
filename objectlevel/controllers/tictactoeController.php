@@ -16,6 +16,12 @@
 		function __construct()
 		{
 			$this->current_model_of_the_world = new ModelOfTheWorld();
+			//agregar mision
+			$this->current_model_of_the_world->addMission('win_game');
+			//seleccionar tokens
+			//first argument = machine
+			//secund argument = player
+			$this->current_model_of_the_world->addTokens('O','X');
 		}
 
 		public function perception($position)
@@ -23,49 +29,51 @@
 			$this->current_perception = new GetPlayerMove($position);
 		}
 
-
 		public function run()
 		{
-
-			$board = $this->current_model_of_the_world->getModelOfTheWorld();
-
-
-			$information = $this->current_perception->getPerception()->getInformation();
-
-			
-			if( empty( $board->getData($information[0],  $information[1]) ) )
+			$board = $this->current_model_of_the_world->getBoard();
+			$perception = $this->current_perception->getPerception()->getInformation();
+			if( empty( $board->getData($perception[0],  $perception[1]) ) )
 			{
-				$this->current_model_of_the_world->getModelOfTheWorld()->setData( $information[0], $information[1], 'X' );
-				//upModelOfTheWorld()->setData( $information[0], $information[1], 'X' );
-				
+				$this->current_model_of_the_world->getBoard()->setData( $perception[0], $perception[1], $this->current_model_of_the_world->currentToken() );
 				$this->current_model_of_the_world->updateModelOfTheWorld();
-
 				//determinar si gano el jugador
-				$verify_winner = new VerifyWinner($this->current_model_of_the_world->getModelOfTheWorld(), 'X');
-				var_dump($verify_winner->run());
+				$verify_winner = new VerifyWinner($this->current_model_of_the_world->getBoard(), $this->current_model_of_the_world->currentToken());
+				$this->current_model_of_the_world->changeTurn();
+
 				//jugar maquina
+				if(!$verify_winner->run())
+				{
+					$machine_plays 	= new MachinePlays($this->current_model_of_the_world);
+					$position 		= $machine_plays->run();
+					$this->current_model_of_the_world->getBoard()->setData($position[0], $position[1],$this->current_model_of_the_world->currentToken());
+					$this->current_model_of_the_world->updateModelOfTheWorld();
+				}
+				else
+				{
+					echo "<b>JUGADOR GANÓ</b>";
+				}
 
-				//daterminar si la maquina gano
-
+				//determinar si la maquina gano
+				$verify_winner = new VerifyWinner($this->current_model_of_the_world->getBoard(), $this->current_model_of_the_world->currentToken());
+				$this->current_model_of_the_world->changeTurn();
+				if ($verify_winner->run()) 
+				{
+					echo "<b>MAQUINA GANÓ</b>";
+				}
 			}
-
 		}
 
 		public function reset()
 		{
-			$this->current_model_of_the_world->getModelOfTheWorld()->create();
+			$this->current_model_of_the_world->getBoard()->create();
 			$this->current_model_of_the_world->updateModelOfTheWorld();
-
 			header("Location: index.php");
 		}
 
 		public function showBoard()
 		{
-			
-			ViewBoard::showBoard($this->current_model_of_the_world->getModelOfTheWorld()->getCells());
+			ViewBoard::showBoard($this->current_model_of_the_world->getBoard()->getCells());
 		}
-
-
-		
 	}
 ?>

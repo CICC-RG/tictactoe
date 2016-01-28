@@ -11,23 +11,89 @@ class ModelOfTheWorld
 {
 	private $board;
 	private $is_created = false;
+	private $mission;
+	private $machine_token;
+	private $player_token;
+	private $is_me_turn = false;
 
 	function __construct()
 	{
+
 		//$this->setBoard(new Board) ;
 
 		$this->board = new Board;
 		$this->board->create();
+		$this->setMission( new Goal() );
+
 		if( !$this->getStateIsCreated() )
 		{
 			$this->setStateIsCreated(true);
 			$this->updateModelOfTheWorld();
 			
+			
+
 		}
 		else
 		{
 			$this->getModelOfTheWorld()->setCells( $_SESSION['model_of_the_world'] );
 		}
+	}
+
+	public function changeTurn()
+	{
+		$this->setStateIsMeTurn( !$this->getStateIsMeTurn() );
+	}
+
+	public function currentToken()
+	{
+		if( $this->getStateIsMeTurn() )
+			return $this->getMachineToken();
+		else
+			return $this->getPlayerToken();
+	}
+
+	public function getStateIsMeTurn()
+	{
+		return $this->is_me_turn;
+	}
+
+	public function setStateIsMeTurn($value)
+	{
+		$this->is_me_turn = $value;
+	}
+
+	public function getMachineToken()
+	{
+		return $this->machine_token;
+	}
+
+	public function setMachineToken($value)
+	{
+		$this->machine_token = $value;
+	}
+
+	public function getPlayerToken()
+	{
+		return $this->player_token;
+	}
+
+	public function setPlayerToken($value)
+	{
+		$this->player_token = $value;
+	}
+
+
+	public function addTokens($machine_token, $player_token)
+	{
+		$this->setMachineToken($machine_token);
+		$this->setPlayerToken($player_token);
+	}
+	public function addMission($value)
+	{
+		$this->getMission()->getCurrentState()->setName($value);
+		$this->getMission()->getCurrentState()->setValue(false);
+		$this->getMission()->getTargetState()->setName($value);
+		$this->getMission()->getTargetState()->setValue(true);
 	}
 
 	public function updateModelOfTheWorld()
@@ -65,13 +131,23 @@ class ModelOfTheWorld
 
 	public function getBoard()
 	{
-		$this->board;
+		return $this->board;
+	}
+
+	public function getMission()
+	{
+		return $this->mission;
+	}
+
+	public function setMission($value)
+	{
+		$this->mission = $value;
 	}
 }
 
 
 class Board extends Element
-	{
+{
 		/*
 			Atributo que almacena el tablero de juego en memoria
 			Corresponde a una matriz
@@ -128,8 +204,7 @@ class Board extends Element
 		{ 
 			$this->cells[$x][$y]=$value;
 		}
-
-	}
+}
 
 /**
 * 
@@ -151,6 +226,7 @@ class VerifyWinner extends ReasoningTask
 {
 	private $ModelOfTheWorld;
 	private $token;
+
 	
 	function __construct($ModelOfTheWorld, $token)
 	{
@@ -170,6 +246,7 @@ class VerifyWinner extends ReasoningTask
 
 
    		for ($i=0; $i < count($this->ModelOfTheWorld->getCells()); $i++) { 
+   			//ganador en cualquier fila
    			$row  			= $this->ModelOfTheWorld->getCells()[$i];
    			$count_token 	= $this->tell( $row, $this->token);
 
@@ -178,6 +255,7 @@ class VerifyWinner extends ReasoningTask
    		}
 
    		for ($i=0; $i < count($columns); $i++) { 
+   			//ganador en la columna
    			$column  		= $columns[$i];
    			$count_token 	= $this->tell( $column, $this->token);
 
@@ -188,9 +266,11 @@ class VerifyWinner extends ReasoningTask
    		$count_d = $this->tell($diagonal, $this->token);
    		$count_t = $this->tell($cross, $this->token);
 
+   		//ganador en la digonal
    		if( $count_d == 3 )
    			return true;
 
+   		//ganador trasversal
    		if( $count_t == 3 )
    			return true;
 
@@ -230,10 +310,114 @@ class VerifyWinner extends ReasoningTask
    		}
    		return [$tempd,$tempt];
    	}
+}
+
+/**
+* Machine plays
+*/
+class MachinePlays extends ReasoningTask
+{
+	private $board;
+	//private $token;
+	
+	function __construct($board)
+	{
+		$this->setBoard($board);
+		$this->addStrategy( new RandomAlgorithmStrategy);
+		$this->addStrategy( new MinMaxAlgorithmStrategy);
+		//$this->setToken($token);
+	}
+
+	public function run()
+	{
+		$cells = $this->getBoard()->getBoard()->getCells();
+   		$strategy = new RandomAlgorithmStrategy($cells);
+   		return $strategy->run();
+	}
 
 
+	public function setBoard($value)
+	{
+		$this->board = $value;
+	}
 
+	public function getBoard()
+	{
+		return $this->board;
+	}
 
+	public function setToken($value)
+	{
+		$this->token = $value;
+	}
 
+	public function getToken()
+	{
+		return $this->token;
+	}
+}
+
+/**
+* RandomStrategy
+*/
+class RandomAlgorithmStrategy extends ComputationalStrategy
+{
+	private $cells;
+
+	function __construct($cells)
+	{
+		$this->setCells($cells);
+	}
+
+	public function run()
+	{
+		$cells = $this->getCells();
+		$count_rows = count($cells);	
+   		do
+   		{
+	   		$r = rand(0, $count_rows-1);
+	   		$count_col = count( $cells[$r] );
+	   		$c = rand(0, $count_col-1);
+   		} while( !empty( $cells[$r][$c]  ) );
+   		return [$r,$c];
+	}
+
+	public function getCells()
+	{
+		return $this->cells;
+	}
+
+	public function setCells($value)
+	{
+		$this->cells = $value;
+	}
+}
+
+/**
+* MinMax
+*/
+class MinMaxAlgorithmStrategy extends ComputationalStrategy
+{
+	private $cells;
+
+	function __construct($cells)
+	{
+		$this->setCells($cells);
+	}
+
+	public function run()
+	{
+		return [1,1];
+	}
+
+	public function getCells()
+	{
+		return $this->cells;
+	}
+
+	public function setCells($value)
+	{
+		$this->cells = $value;
+	}
 }
 ?>

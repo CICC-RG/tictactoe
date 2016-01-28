@@ -4,6 +4,7 @@
 	abstract class RootElement
 	{
 		public $name;
+		private $output;
 
 		public function getName()
 		{
@@ -14,10 +15,30 @@
 		{
 			$this->name = $value;
 		}
+
+		public function getOutput()
+		{
+			return $this->output;
+		}
+
+		public function setOutput($value)
+		{
+			$this->output = $value;
+		}
 	}
 
 	abstract class Element extends RootElement{
 
+	}
+
+	abstract class Profile extends RootElement {
+	}
+
+	abstract class ReasoningTaskProfile extends Profile {
+		private $task;
+		private $start_time;
+		private $end_time;
+		//private $status;
 	}
 
 	abstract class FuntionalElement extends RootElement {
@@ -54,6 +75,13 @@
 		{
 			return $this->precodition;
 		}
+	}
+
+	abstract class Strategy extends FuntionalElement {
+		abstract public function run();
+	}
+	abstract class ComputationalStrategy extends Strategy {
+
 	}
 
 	abstract class Action extends FuntionalElement {

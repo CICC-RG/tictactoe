@@ -44,8 +44,6 @@
 		{
 			$this->perception = $value;
 		}
-
-
 	}
 
 
@@ -54,7 +52,28 @@
 	}
 
 	abstract class ReasoningTask extends CognitiveTask {
-		
+		private $strategies;
+
+		public function setStrategies($value)
+		{
+			$this->strategies = $value;
+		}
+
+		public function getStrategies()
+		{
+			return $this->strategies;
+		}
+
+		public function addStrategy($value)
+		{
+			return $this->strategies[] = $value;
+		}
+
+		public function getStrategy($i)
+		{
+			return $this->strategies[$i];
+		}
+
 	}
 
 ?>
