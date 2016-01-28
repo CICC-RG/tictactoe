@@ -38,7 +38,7 @@
 		private $task;
 		private $start_time;
 		private $end_time;
-		//private $status;
+		private $status;
 	}
 
 	abstract class FuntionalElement extends RootElement {
