@@ -6,11 +6,11 @@
 		{
 		}
 
-		public function showBoard($modelOfTheWorld)
+		public function showBoard($modelOfTheWorld, $events)
 		{
 
 			$output  = self::header();
-			$output .= self::body($modelOfTheWorld);
+			$output .= self::body($modelOfTheWorld, $events);
 			$output .= self::footer();
 			echo $output;
 		}
@@ -23,9 +23,9 @@
 			return $output;
 		}
 
-		public function body($data)
+		public function body($data, $events)
 		{
-			$output  = "<form action='' method='POST'><table><tbody>";
+			$output  = "<form action='' method='POST'><table class='tictactoe'><tbody>";
 
 			for ($i=0; $i < count($data) ; $i++) { 
 				$output .= '<tr>';
@@ -39,6 +39,12 @@
 			}
 			$output .= "<tr><td colspan='".count($data)."'><a href='?reset=1'>REINICIAR</a></td></tr>";
 			$output .= "</tbody></table></form>";
+
+			$output .= "<div class='container'><table class='events'><thead><tr><th>Eventos</th></tr></thead><tbody>";
+			for ($j=0; $j < count($events); $j++) { 
+				$output .= "<tr><td>{$events[$j]->getName()}</td></tr>";
+			}
+			$output .= "</tbody></table></div>";
 			return $output;
 		}
 

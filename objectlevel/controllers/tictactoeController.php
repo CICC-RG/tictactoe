@@ -73,7 +73,7 @@
 
 		public function showBoard()
 		{
-			ViewBoard::showBoard($this->current_model_of_the_world->getBoard()->getCells());
+			ViewBoard::showBoard($this->current_model_of_the_world->getBoard()->getCells(), []);
 		}
 	}
 ?>

@@ -27,6 +27,47 @@
 		}
 	}
 
+	
+	abstract class Sensor extends RootElement
+	{
+		private $type;
+
+		public function perceiveInformation($value)
+		{
+			
+		}
+
+		public function getType()
+		{
+			return $this->type;
+		}
+
+		public function setType($value)
+		{
+			$this->type = $type;
+		}
+	}
+
+	class Field extends RootElement {
+		private $value;
+
+		function __construct($name, $value)
+		{
+			$this->setName($name);
+			$this->setValue($value);
+		}
+
+		public function setValue($value)
+		{
+			$this->value = $value;
+		}
+
+		public function getValue()
+		{
+			return $this->value;
+		}
+	}
+
 	abstract class Element extends RootElement{
 
 	}
@@ -35,10 +76,21 @@
 	}
 
 	abstract class ReasoningTaskProfile extends Profile {
-		private $task;
-		private $start_time;
-		private $end_time;
-		private $status;
+		//esto es un arreglo de clase FIELD
+		private $fields;
+
+		function __construct($fields)
+		{
+			for ($i=0; $i < count($fields); $i++) { 
+				$field = $fields[$i];
+				$this->setField($field['name'], $field['value'] );
+			}
+		}
+
+		public function setField($name, $value)
+		{
+			$this->fields[] = new Field($name, $value);
+		}
 	}
 
 	abstract class FuntionalElement extends RootElement {
@@ -98,6 +150,13 @@
 		}
 		abstract public function run();
 
+
+		public function buildProfile()
+		{
+			var_dump( __CLASS__ );
+		}
+
+		
 		public function setGoal($value)
 		{
 			$this->goal = $value;
@@ -177,6 +236,10 @@
 		{
 			
 		}
+	}
+
+	abstract class EstructureElement extends RootElement {
+
 	}
 
 

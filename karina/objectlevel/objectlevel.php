@@ -91,6 +91,8 @@
 		public function getProfile(){
 			return $this->profile;
 		}
+
+
 	}
 	/**
 	* pendiente de procesar clase MemoryEvent
@@ -105,7 +107,18 @@
 	}
 
 
-
+	
+	/**
+	* 
+	*/
+	class MouseSensor extends Sensor
+	{
+		
+		function __construct()
+		{
+			$this->setType('mouse');
+		}
+	}
 
 
 

@@ -206,15 +206,17 @@ class Board extends Element
 		}
 }
 
+
+
 /**
 * 
 */
-class GetPlayerMove extends Perception
+class GetPlayerMove extends MouseSensor
 {
 	
 	function __construct($value)
 	{
-		$this->processInformation($value);
+		$this->perceiveInformation($value);
 	}
 
 }
@@ -318,13 +320,14 @@ class VerifyWinner extends ReasoningTask
 class MachinePlays extends ReasoningTask
 {
 	private $board;
-	//private $token;
+	private $tasks;
 	
 	function __construct($board)
 	{
+
 		$this->setBoard($board);
-		$this->addStrategy( new RandomAlgorithmStrategy);
-		$this->addStrategy( new MinMaxAlgorithmStrategy);
+		$this->addStrategy( new RandomAlgorithmStrategy($this->getBoard()->getBoard()->getCells()) );
+		$this->addStrategy( new MinMaxAlgorithmStrategy($this->getBoard()->getBoard()->getCells()) );
 		//$this->setToken($token);
 	}
 
@@ -332,9 +335,9 @@ class MachinePlays extends ReasoningTask
 	{
 		$cells = $this->getBoard()->getBoard()->getCells();
    		$strategy = new RandomAlgorithmStrategy($cells);
+   		$this->buildProfile();
    		return $strategy->run();
 	}
-
 
 	public function setBoard($value)
 	{
