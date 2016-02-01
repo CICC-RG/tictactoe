@@ -4,9 +4,7 @@
 	require_once 'objectlevel/controllers/tictactoeController.php';
 	require_once 'karina/objectlevel/objectlevel.php';
 	//require_once 'objectlevel/models/models.php';
-
 	//call controller
-
 	$data_controllers = new TictactoeControllers;
 	if( $_POST )
 	{
@@ -15,13 +13,10 @@
 		$data_controllers->perception($position);
 		$data_controllers->run();
 	}
-
 	if( isset($_GET['reset']) )
 	{
 		$data_controllers->reset();
 	}
-	
-	
 	$data_controllers->showBoard();
 
 ?>
