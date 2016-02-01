@@ -73,7 +73,42 @@
 		{
 			return $this->strategies[$i];
 		}
+		public function buildProfail(){
 
+		}
+    }
+		
+	class ReasoningEvent extends Event
+	{
+		private $profile;
+		function __construct()
+		{
+			
+		}
+		public function setProfile($value){
+		  $this->profile=$value;	
+		}
+		public function getProfile(){
+			return $this->profile;
+		}
 	}
+	/**
+	* pendiente de procesar clase MemoryEvent
+	*/
+	class MemoryEvent extends Event
+	{
+		
+		function __construct()
+		{
+			
+		}
+	}
+
+
+
+
+
+
+	
 
 ?>

@@ -166,5 +166,18 @@
 		abstract public function processInformation($value);
 	}
 
+	/**
+	* 
+	*/
+	class Event extends Element
+	{
+	 	
+		
+		function __construct()
+		{
+			
+		}
+	}
+
 
 ?>
