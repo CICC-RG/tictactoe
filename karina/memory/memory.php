@@ -1,5 +1,6 @@
 <?php
 	require_once __DIR__ . '/../metacore/metacore.php';
+	require_once __DIR__ . '/../objectlevel/objectlevel.php';
 
 	/**
 	* 
@@ -51,6 +52,19 @@
 		}
 
 
+		public function select()
+		{
+			$sql = "SELECT * FROM {$this->getTable()} ORDER BY 'id' ASC LIMIT 1";
+			$result = mysql_query($sql);
+			var_dump($sql);
+			$result = mysql_fetch_array($result);
+			$new_perception = new Perception;
+			$position 	= explode('_', $result['information']);
+			$new_perception->processInformation($position);
+			return $new_perception;
+		}
+
+
 		public function setTable($value)
 		{
 			$this->table = $value;
@@ -59,6 +73,18 @@
 		public function getTable()
 		{
 			return $this->table;
+		}
+	}
+
+	/**
+	* SensorMemory
+	*/
+	class SensorMemory extends Memory
+	{
+		
+		function __construct()
+		{
+			$this->setTable('ssm');
 		}
 	}
 ?>

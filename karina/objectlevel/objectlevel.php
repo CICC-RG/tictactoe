@@ -20,10 +20,11 @@
 	}
 
 
-	abstract class Perception extends CognitiveFunction {
+	/*abstract*/
+	class Perception extends CognitiveFunction {
 		private $perception; //type Input
 
-		function __construct($value)
+		function __construct()
 		{
 			//$this->processInformation($value);
 		}

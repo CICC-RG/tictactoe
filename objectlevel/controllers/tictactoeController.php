@@ -10,6 +10,7 @@
 	*/
 	class TictactoeControllers
 	{
+		private $player_movement;
 		private $current_perception;
 		private $current_model_of_the_world;
 		
@@ -22,11 +23,17 @@
 			//first argument = machine
 			//secund argument = player
 			$this->current_model_of_the_world->addTokens('O','X');
+			$this->player_movement = new PlayerMovement;
 		}
 
-		public function perception($position)
+		public function sensor($keys)
 		{
-			$this->current_perception = new GetPlayerMove($position);
+			$this->player_movement->setMovement($keys);
+		}
+
+		public function perception()
+		{
+			$this->current_perception = $this->player_movement->getMovement();
 		}
 
 		public function run()

@@ -211,14 +211,24 @@ class Board extends Element
 /**
 * 
 */
-class GetPlayerMove extends MouseSensor
+class PlayerMovement extends MouseSensor
 {
-	
-	function __construct($value)
+		
+	private $ssm;
+	function __construct()
 	{
-		$this->perceiveInformation($value);
+		$this->ssm = new SensorMemory;
 	}
 
+	public function setMovement($value)
+	{
+		$this->ssm->create(['information', 'type'], [ $value, $this->getType() ]);
+	}
+
+	public function getMovement()
+	{
+		return $this->ssm->select();
+	}
 }
 
 /**
