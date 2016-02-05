@@ -44,7 +44,7 @@
 
 		public function setType($value)
 		{
-			$this->type = $type;
+			$this->type = $value;
 		}
 	}
 
@@ -153,7 +153,7 @@
 
 		public function buildProfile()
 		{
-			var_dump( __CLASS__ );
+			
 		}
 
 		

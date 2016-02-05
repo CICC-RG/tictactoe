@@ -18,9 +18,7 @@ class ModelOfTheWorld
 
 	function __construct()
 	{
-
 		//$this->setBoard(new Board) ;
-
 		$this->board = new Board;
 		$this->board->create();
 		$this->setMission( new Goal() );
@@ -29,13 +27,10 @@ class ModelOfTheWorld
 		{
 			$this->setStateIsCreated(true);
 			$this->updateModelOfTheWorld();
-			
-			
-
 		}
 		else
 		{
-			$this->getModelOfTheWorld()->setCells( $_SESSION['model_of_the_world'] );
+			$this->getBoard()->setCells( $_SESSION['model_of_the_world'] );
 		}
 	}
 
@@ -98,15 +93,8 @@ class ModelOfTheWorld
 
 	public function updateModelOfTheWorld()
 	{
-		$_SESSION['model_of_the_world'] = $this->getModelOfTheWorld()->getCells();
+		$_SESSION['model_of_the_world'] = $this->getBoard()->getCells();
 		$_SESSION['is_created'] = $this->getStateIsCreated();
-	}
-
-
-	public function getModelOfTheWorld()
-	{
-		return $this->board;
-		//return $_SESSION['model_of_the_world'];
 	}
 
 
@@ -164,7 +152,7 @@ class Board extends Element
 		*/
 		public function create()
 		{
-			for ($x=0; $x < 3; $x++) { 
+			for ($x=0; $x <= 2; $x++) { 
 				$cells[$x] = [];
 			}
 			for ($i=0; $i <=2; $i++) 
@@ -257,7 +245,7 @@ class VerifyWinner extends ReasoningTask
    		$cross 		= $temp[1];
 
 
-   		for ($i=0; $i < count($this->ModelOfTheWorld->getCells()); $i++) { 
+   		for ($i=0; $i < 3; $i++) { 
    			//ganador en cualquier fila
    			$row  			= $this->ModelOfTheWorld->getCells()[$i];
    			$count_token 	= $this->tell( $row, $this->token);
@@ -266,7 +254,7 @@ class VerifyWinner extends ReasoningTask
    				return true;
    		}
 
-   		for ($i=0; $i < count($columns); $i++) { 
+   		for ($i=0; $i < 3; $i++) { 
    			//ganador en la columna
    			$column  		= $columns[$i];
    			$count_token 	= $this->tell( $column, $this->token);
@@ -292,7 +280,7 @@ class VerifyWinner extends ReasoningTask
    	private function tell($cells, $token)
    	{
    		$temp = 0;
-   		for ($i=0; $i < count($cells); $i++) { 
+   		for ($i=0; $i < 3; $i++) { 
    			if( $cells[$i] == $token )
    				$temp++;
    		}
@@ -303,8 +291,8 @@ class VerifyWinner extends ReasoningTask
    	{
    		$temp = [];
 
-   		for ($i=0; $i < count($cells); $i++) { 
-   			for ($j=0; $j < count($cells[$i]); $j++) { 
+   		for ($i=0; $i < 3; $i++) { 
+   			for ($j=0; $j < 3; $j++) { 
    				$temp[$j][$i] = $cells[$i][$j];
    			}
    		}
@@ -315,7 +303,7 @@ class VerifyWinner extends ReasoningTask
    	{
    		$tempd = [];
         $tempt = [];
-   		for ($i=0; $i < count($cells); $i++) { 
+   		for ($i=0; $i < 3; $i++) { 
    			$tempd[]=$cells[$i][$i];
  	        $tempt[]= $cells[$i][2-$i];
    			
@@ -388,9 +376,9 @@ class RandomAlgorithmStrategy extends ComputationalStrategy
 		$count_rows = count($cells);	
    		do
    		{
-	   		$r = rand(0, $count_rows-1);
+	   		$r = rand(0, 2);
 	   		$count_col = count( $cells[$r] );
-	   		$c = rand(0, $count_col-1);
+	   		$c = rand(0, 2);
    		} while( !empty( $cells[$r][$c]  ) );
    		return [$r,$c];
 	}

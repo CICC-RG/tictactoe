@@ -8,7 +8,6 @@
 
 		public function showBoard($modelOfTheWorld, $events)
 		{
-
 			$output  = self::header();
 			$output .= self::body($modelOfTheWorld, $events);
 			$output .= self::footer();
@@ -27,9 +26,9 @@
 		{
 			$output  = "<form action='' method='POST'><table class='tictactoe'><tbody>";
 
-			for ($i=0; $i < count($data) ; $i++) { 
+			for ($i=0; $i < 3 ; $i++) { 
 				$output .= '<tr>';
-				for ($j=0; $j < count($data[$i]); $j++) { 
+				for ($j=0; $j < 3; $j++) { 
 					$output .= "<td><input type='submit' value='{$data[$i][$j]}' name='{$i}_{$j}' ";
 					if($data[$i][$j] != '') 
 						$output .= "disabled";

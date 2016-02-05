@@ -36,11 +36,6 @@ CREATE TABLE `ssm` (
 -- Volcado de datos para la tabla `ssm`
 --
 
-INSERT INTO `ssm` (`id`, `information`, `type`) VALUES
-(1, 'hola', 'mouse'),
-(2, 'adasdadas', 'mouse'),
-(3, 'adasdadas', 'mouse');
-
 --
 -- Índices para tablas volcadas
 --

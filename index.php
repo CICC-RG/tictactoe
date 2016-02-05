@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	//unset($_SESSION);
 	require_once 'objectlevel/views/view_board.php';
 	require_once 'objectlevel/controllers/tictactoeController.php';
 	require_once 'karina/objectlevel/objectlevel.php';

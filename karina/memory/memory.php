@@ -19,7 +19,6 @@
 		public function create($fields, $values)
 		{
 			$sql = "INSERT INTO {$this->getTable()} (";
-
 			
 			$c = 1;
 			for ($i=0; $i < count($fields); $i++) { 
@@ -51,19 +50,20 @@
 
 		}
 
-
 		public function select()
 		{
-			$sql = "SELECT * FROM {$this->getTable()} ORDER BY 'id' ASC LIMIT 1";
+			$sql = "SELECT * FROM {$this->getTable()} ORDER BY id ASC LIMIT 1";
 			$result = mysql_query($sql);
-			var_dump($sql);
 			$result = mysql_fetch_array($result);
+			
+			$sql = "DELETE FROM {$this->getTable()} WHERE id = {$result['id']}";
+			mysql_query($sql);
+
 			$new_perception = new Perception;
 			$position 	= explode('_', $result['information']);
 			$new_perception->processInformation($position);
 			return $new_perception;
 		}
-
 
 		public function setTable($value)
 		{
@@ -84,6 +84,7 @@
 		
 		function __construct()
 		{
+			parent::__construct();
 			$this->setTable('ssm');
 		}
 	}
