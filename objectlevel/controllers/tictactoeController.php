@@ -9,9 +9,10 @@
 	class TictactoeControllers
 	{
 		private $player_movement;
-		private $current_perception;
+		private $current_perception; // current perception is BCPU
 		private $current_model_of_the_world;
 		
+		private $recognition;
 		function __construct()
 		{
 			$this->current_model_of_the_world = new ModelOfTheWorld();
@@ -22,6 +23,8 @@
 			//secund argument = player
 			$this->current_model_of_the_world->addTokens('O','X');
 			$this->player_movement = new PlayerMovement;
+
+			$this->recognition = new Recognition;
 		}
 
 		public function sensor($keys)
@@ -32,12 +35,16 @@
 		public function perception()
 		{
 			$this->current_perception = $this->player_movement->getMovement();
+			
+			$this->current_perception = $this->recognition->run([ 'bcpu' => $this->current_perception, 'algorithmStrategy' => 'ReconizeAlgorithmStrategy' ]);
+
 		}
 
+		//cognitive loop
 		public function run()
 		{
 			$board = $this->current_model_of_the_world->getBoard();
-			$perception = $this->current_perception->getPerception()->getInformation();
+			$perception = $this->current_perception->getPerception()->getInput()->getInformation();
 			if( empty( $board->getData($perception[0],  $perception[1]) ) )
 			{
 				$this->current_model_of_the_world->getBoard()->setData( $perception[0], $perception[1], $this->current_model_of_the_world->currentToken() );

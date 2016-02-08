@@ -1,7 +1,9 @@
 <?php
 	require_once  __DIR__ . '/../metacore/metacore.php';
-	class Input  extends Element{
+
+	class Input  extends RootElement{
 		private $information;
+		private $type;
 
 		function __construct()
 		{
@@ -17,6 +19,114 @@
 		{
 			return $this->information;
 		}
+
+		public function setType($value)
+		{
+			$this->type = $value;
+		}
+
+		public function getType()
+		{
+			return $this->type;
+		}
+	}
+
+	/**
+	* Pattern
+	*/
+	class Pattern extends RootElement
+	{
+		private $patter;
+
+		function __construct()
+		{
+			
+		}
+
+		public function addPatter($value)
+		{
+			$this->patter = $value;
+		}
+
+	}
+
+
+	/**
+	* 
+	*/
+	class BasicCognitiveProcessingUnit extends RootElement
+	{
+		private $input;
+		private $patter;
+
+		function __construct()
+		{
+			
+		}
+
+		public function addInput($value, $type_sensor)
+		{
+			$new_input = new Input;
+			$new_input->setInformation($value);
+			$new_input->setInput($type_sensor);
+			$this->setInput($new_input);
+		}
+
+		public function addPatter($value)
+		{
+			$p = new Pattern;
+			$p->setPatter($value);
+			$this->setPatter($p);
+		}
+
+
+		public function setPatter($value)
+		{
+			$this->patter = $value;
+		}
+
+		public function getPatter()
+		{
+			return $this->patter;
+		}
+
+		public function setInput($value)
+		{
+			$this->input = $input;
+		}
+
+		public function getInput()
+		{
+			return $this->input;
+		}
+	}
+
+
+	/**
+	* Recognition
+	*/
+	class Recognition extends CognitiveFunction
+	{
+		
+		function __construct()
+		{
+			
+		}
+
+		public function processInformation($value)
+		{
+			$information 		= $value['bcpu']->getInput()->getInformation();
+			$algorithmStrategy 	= new $$value['algorithmStrategy']($information);
+			$reconition 		= $algorithmStrategy->run();
+
+			//esto es hay que cambiarlo por IA!!!
+			$perceptual_memory = new PerceptualMemory;
+			$perceptual_memory->storeInformation(['value', 'recognized'], [ $information[0] . '_' . $information[1] , $reconition ]);
+			$value->addPatter($reconition);
+			return $value;
+		}
+
+		
 	}
 
 
@@ -31,9 +141,9 @@
 
 		public function processInformation($value)
 		{
-			$new_input  = new Input;
-			$new_input->setInformation($value);
-			$this->setPerception($new_input);
+			$bcpi  = new BasicCognitiveProcessingUnit;
+			$bcpi->addInput($value['information'], $value['type_sensor']);
+			$this->setPerception($bcpi);
 		}
 
 		public function getPerception()

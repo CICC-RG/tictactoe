@@ -1,6 +1,9 @@
 <?php
 
 	//MetaElement deprecated
+	
+
+
 	abstract class RootElement
 	{
 		public $name;
@@ -26,6 +29,7 @@
 			$this->output = $value;
 		}
 	}
+
 
 	
 	abstract class Sensor extends RootElement

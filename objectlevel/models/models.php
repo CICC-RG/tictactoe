@@ -210,12 +210,12 @@ class PlayerMovement extends MouseSensor
 
 	public function setMovement($value)
 	{
-		$this->ssm->create(['information', 'type'], [ $value, $this->getType() ]);
+		$this->ssm->storeInformation(['information', 'type'], [ $value, $this->getType() ]);
 	}
 
 	public function getMovement()
 	{
-		return $this->ssm->select();
+		return $this->ssm->retrieveInformation($this->getType());
 	}
 }
 
@@ -355,6 +355,38 @@ class MachinePlays extends ReasoningTask
 	public function getToken()
 	{
 		return $this->token;
+	}
+}
+
+
+/**
+* ReconizeAlgorithmStrategy
+*/
+class ReconizeAlgorithmStrategy extends ComputationalStrategy
+{
+	private $value;
+	function __construct()
+	{
+		
+	}
+
+	public function run()
+	{
+		//value is a array, 2 position
+		if( count($this->getValue()[0]) == 2 && count($this->getValue()[1]) == 2 )
+			return true;
+		else
+			return false;
+	}
+
+	public function setValue($value='')
+	{
+		$this->value = $value;
+	}
+
+	public function getValue()
+	{
+		return $this->value;
 	}
 }
 
