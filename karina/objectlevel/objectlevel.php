@@ -68,7 +68,7 @@
 		{
 			$new_input = new Input;
 			$new_input->setInformation($value);
-			$new_input->setInput($type_sensor);
+			$new_input->setType($type_sensor);
 			$this->setInput($new_input);
 		}
 
@@ -92,7 +92,7 @@
 
 		public function setInput($value)
 		{
-			$this->input = $input;
+			$this->input = $value;
 		}
 
 		public function getInput()
@@ -141,6 +141,7 @@
 
 		public function processInformation($value)
 		{
+			var_dump($value);
 			$bcpi  = new BasicCognitiveProcessingUnit;
 			$bcpi->addInput($value['information'], $value['type_sensor']);
 			$this->setPerception($bcpi);

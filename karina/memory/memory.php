@@ -71,7 +71,7 @@
 
 			$new_perception = new Perception;
 			//$position 	= explode('_', $result['information']);
-			$new_perception->processInformation($result['information'], $cue);
+			$new_perception->processInformation( [ 'information' => $result['information'], 'type_sensor' => $result['type']]);
 			return $new_perception;
 		}
 
@@ -152,8 +152,8 @@
 			$this->forgetInformation($result);
 
 			$new_perception = new Perception;
-			$position 	= explode('_', $result['information']);
-			$new_perception->processInformation($position, $cue);
+			//$position 	= explode('_', $result['information']);
+			$new_perception->processInformation( [ 'information' =>  $result['information'],  'type' => $cue] );
 			return $new_perception;
 		}
 

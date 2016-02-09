@@ -205,6 +205,7 @@ class PlayerMovement extends MouseSensor
 	private $ssm;
 	function __construct()
 	{
+		parent::__construct();
 		$this->ssm = new SensorMemory;
 	}
 
