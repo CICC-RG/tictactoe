@@ -153,7 +153,7 @@
 
 			$new_perception = new Perception;
 			//$position 	= explode('_', $result['information']);
-			$new_perception->processInformation( [ 'information' =>  $result['information'],  'type' => $cue] );
+			$new_perception->processInformation( [ 'information' =>  $result['information'],  'type_sensor' => $cue] );
 			return $new_perception;
 		}
 

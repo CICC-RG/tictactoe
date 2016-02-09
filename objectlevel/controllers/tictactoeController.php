@@ -13,6 +13,7 @@
 		private $current_model_of_the_world;
 		
 		private $recognition;
+		private $categorization;
 		function __construct()
 		{
 			$this->current_model_of_the_world = new ModelOfTheWorld();
@@ -22,9 +23,10 @@
 			//first argument = machine
 			//secund argument = player
 			$this->current_model_of_the_world->addTokens('O','X');
-			$this->player_movement = new PlayerMovement;
+			$this->player_movement 	= new PlayerMovement;
 
-			$this->recognition = new Recognition;
+			$this->recognition 		= new Recognition;
+			$this->categorization 	= new Categorization;
 		}
 
 		public function sensor($keys)
@@ -36,8 +38,8 @@
 		{
 			$this->current_perception = $this->player_movement->getMovement();
 			
-			$this->current_perception = $this->recognition->run([ 'bcpu' => $this->current_perception, 'algorithmStrategy' => 'ReconizeAlgorithmStrategy' ]);
-
+			$this->current_perception = $this->recognition->processInformation([ 'bcpu' => $this->current_perception, 'algorithmStrategy' => 'ReconizeAlgorithmStrategy' ]);
+			$this->current_perception = $this->categorization->processInformation( ['bcpu' =>  $this->current_perception, 'algorithmStrategy' => 'CategorizationAlgorithmStrategy', 'modelOfTheWorld' => $this->current_model_of_the_world] );
 		}
 
 		//cognitive loop
@@ -45,6 +47,7 @@
 		{
 			$board = $this->current_model_of_the_world->getBoard();
 			$perception = $this->current_perception->getPerception()->getInput()->getInformation();
+			$perception = explode('_', $perception);
 			if( empty( $board->getData($perception[0],  $perception[1]) ) )
 			{
 				$this->current_model_of_the_world->getBoard()->setData( $perception[0], $perception[1], $this->current_model_of_the_world->currentToken() );

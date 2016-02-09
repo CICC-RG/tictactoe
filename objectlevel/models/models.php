@@ -361,20 +361,85 @@ class MachinePlays extends ReasoningTask
 
 
 /**
+* CategorizationAlgorithmStrategy
+*/
+class CategorizationAlgorithmStrategy extends ComputationalStrategy
+{
+	private $value;
+	private $categories;
+	private $model_of_the_world;
+	function __construct($categories, $value, $model_of_the_world)
+	{
+		$this->setCategories($categories);
+		$this->setValue($value);
+		$this->setModelOfTheWorld($model_of_the_world);
+	}
+
+	public function run()
+	{
+		$categories = [];
+		$information = explode('_', $this->getValue());
+		$board = $this->getModelOfTheWorld()->getBoard()->getCells();
+		//se recorren las categorias
+		foreach ($this->getCategories() as $category) {
+			if( strtoupper($board[$information[0]][$information[1]]) == strtoupper($category['value']) )
+			{
+				if( !in_array( $category['name'] , $categories) )
+				{
+					$categories[] = $category['name'];
+				}
+			}
+		}
+		print_r($categories);
+		return $categories;
+	}
+
+
+	public function getModelOfTheWorld()
+	{
+		return $this->model_of_the_world;
+	}	
+
+	public function setModelOfTheWorld($value)
+	{
+		$this->model_of_the_world = $value;
+	}
+
+	public function setCategories($value)
+	{
+		$this->categories = $value;
+	}
+	public function getCategories()
+	{
+		return $this->categories;
+	}
+
+	public function setValue($value='')
+	{
+		$this->value = $value;
+	}
+
+	public function getValue()
+	{
+		return $this->value;
+	}
+}
+
+/**
 * ReconizeAlgorithmStrategy
 */
 class ReconizeAlgorithmStrategy extends ComputationalStrategy
 {
 	private $value;
-	function __construct()
+	function __construct($value)
 	{
-		
+		$this->setValue($value);
 	}
 
 	public function run()
 	{
-		//value is a array, 2 position
-		if( count($this->getValue()[0]) == 2 && count($this->getValue()[1]) == 2 )
+		//un String con dos numeros entre 0 y 2 separados por un "_"
+		if( ereg('[0-2]_[0-2]', $this->getValue())  )
 			return true;
 		else
 			return false;

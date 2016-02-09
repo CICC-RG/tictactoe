@@ -36,18 +36,41 @@
 	*/
 	class Pattern extends RootElement
 	{
-		private $patter;
+		private $pattern;
 
 		function __construct()
 		{
 			
 		}
 
-		public function addPatter($value)
+		public function setPattern($value)
 		{
-			$this->patter = $value;
+			$this->pattern = $value;
 		}
 
+		public function getPattern()
+		{
+			return $this->pattern;
+		}
+
+	}
+
+	/**
+	* Categorie
+	*/
+	class Category extends RootElement
+	{
+		private $category;
+
+		public function getCategory()
+		{
+			return $this->category;
+		}
+
+		public function setCategory($value)
+		{
+			$this->category = $value;
+		}
 	}
 
 
@@ -57,7 +80,8 @@
 	class BasicCognitiveProcessingUnit extends RootElement
 	{
 		private $input;
-		private $patter;
+		private $pattern;
+		private $categories;
 
 		function __construct()
 		{
@@ -72,22 +96,43 @@
 			$this->setInput($new_input);
 		}
 
-		public function addPatter($value)
+		public function addPattern($value)
 		{
 			$p = new Pattern;
-			$p->setPatter($value);
-			$this->setPatter($p);
+			$p->setPattern($value);
+			$this->setPattern($p);
+		}
+
+		public function addCategories($categories)
+		{
+			$temp = [];
+			foreach ($categories as $category) {
+				$c = new Category;
+				$c->setCategory($category);
+				$temp[] = $c;
+			}
+			$this->setCategories($temp);
+		}
+
+		public function setCategories($value)
+		{
+			$this->categories = $value;
+		}
+
+		public function getCategories()
+		{
+			return $this->categories;
 		}
 
 
-		public function setPatter($value)
+		public function setPattern($value)
 		{
 			$this->patter = $value;
 		}
 
-		public function getPatter()
+		public function getPattern()
 		{
-			return $this->patter;
+			return $this->pattern;
 		}
 
 		public function setInput($value)
@@ -99,6 +144,55 @@
 		{
 			return $this->input;
 		}
+	}
+
+	/**
+	* Categorization
+	*/
+	class Categorization extends CognitiveFunction
+	{
+		
+		private $db = "karina";
+		private $table = "categories";
+
+		function __construct($host="localhost", $user="root", $pass="")
+		{
+			mysql_connect($host, $user, $pass);
+			mysql_select_db($this->db);
+		}
+
+		public function processInformation($value)
+		{
+			$information 		= $value['bcpu']->getPerception()->getInput()->getInformation();
+			$categories 		= $this->getCategories();
+			$algorithmStrategy 	= new $value['algorithmStrategy']($categories, $information, $value['modelOfTheWorld']);
+			$categorization 	= $algorithmStrategy->run();
+
+			
+			$value['bcpu']->getPerception()->addCategories($categorization);
+			return $value['bcpu'];
+		}
+
+		public function getCategories()
+		{
+			$sql 	= "SELECT * FROM {$this->getTable()}";
+			$result = mysql_query($sql);
+			$temp = [];
+
+			while( $row = mysql_fetch_array($result) )
+			{
+				$temp[] = $row;
+			}
+
+			return $temp;
+		}
+
+		public function getTable()
+		{
+			return $this->table;
+		}
+
+		
 	}
 
 
@@ -115,15 +209,15 @@
 
 		public function processInformation($value)
 		{
-			$information 		= $value['bcpu']->getInput()->getInformation();
-			$algorithmStrategy 	= new $$value['algorithmStrategy']($information);
+			$information 		= $value['bcpu']->getPerception()->getInput()->getInformation();
+			$algorithmStrategy 	= new $value['algorithmStrategy']($information);
 			$reconition 		= $algorithmStrategy->run();
 
 			//esto es hay que cambiarlo por IA!!!
 			$perceptual_memory = new PerceptualMemory;
-			$perceptual_memory->storeInformation(['value', 'recognized'], [ $information[0] . '_' . $information[1] , $reconition ]);
-			$value->addPatter($reconition);
-			return $value;
+			$perceptual_memory->storeInformation(['value', 'recognized'], [ $information , $reconition ]);
+			$value['bcpu']->getPerception()->addPattern($reconition);
+			return $value['bcpu'];
 		}
 
 		
@@ -141,7 +235,6 @@
 
 		public function processInformation($value)
 		{
-			var_dump($value);
 			$bcpi  = new BasicCognitiveProcessingUnit;
 			$bcpi->addInput($value['information'], $value['type_sensor']);
 			$this->setPerception($bcpi);
