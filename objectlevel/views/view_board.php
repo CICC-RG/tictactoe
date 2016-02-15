@@ -30,8 +30,8 @@
 				$output .= '<tr>';
 				for ($j=0; $j < 3; $j++) { 
 					$output .= "<td><input type='submit' value='{$data[$i][$j]}' name='{$i}_{$j}' ";
-					if($data[$i][$j] != '') 
-						$output .= "disabled";
+					/*if($data[$i][$j] != '') 
+						$output .= "disabled";*/
 					$output .= "></td>";
 				}
 				$output .= '</tr>';

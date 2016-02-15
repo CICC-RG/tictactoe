@@ -167,7 +167,6 @@
 			$categories 		= $this->getCategories();
 			$algorithmStrategy 	= new $value['algorithmStrategy']($categories, $information, $value['modelOfTheWorld']);
 			$categorization 	= $algorithmStrategy->run();
-
 			
 			$value['bcpu']->getPerception()->addCategories($categorization);
 			return $value['bcpu'];

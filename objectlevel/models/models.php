@@ -12,8 +12,8 @@ class ModelOfTheWorld
 	private $board;
 	private $is_created = false;
 	private $mission;
-	private $machine_token;
-	private $player_token;
+	private $machine_token = "O";
+	private $player_token = "X";
 	private $is_me_turn = false;
 
 	function __construct()
@@ -30,7 +30,7 @@ class ModelOfTheWorld
 		}
 		else
 		{
-			$this->getBoard()->setCells( $_SESSION['model_of_the_world'] );
+			$this->getBoard()->setCells( $_SESSION['cells'] );
 		}
 	}
 
@@ -93,7 +93,7 @@ class ModelOfTheWorld
 
 	public function updateModelOfTheWorld()
 	{
-		$_SESSION['model_of_the_world'] = $this->getBoard()->getCells();
+		$_SESSION['cells'] = $this->getBoard()->getCells();
 		$_SESSION['is_created'] = $this->getStateIsCreated();
 	}
 
@@ -219,6 +219,78 @@ class PlayerMovement extends MouseSensor
 		return $this->ssm->retrieveInformation($this->getType());
 	}
 }
+
+
+/**
+* Muestra el board
+*/
+class ShowBoard extends ReasoningTask
+{
+	private $model_of_the_world;
+	private $styles;
+	function __construct($model_of_the_world, $styles = [])
+	{
+		$this->setModelOfTheWorld($model_of_the_world);
+		$this->setStyles($styles);
+	}
+
+	public function run()
+	{
+		ViewBoard::showBoard($this->getModelOfTheWorld()->getBoard()->getCells(), $this->getStyles());
+	}
+
+	public function getStyles()
+	{
+		return $this->styles;
+	}
+
+	public function setStyles($value)
+	{
+		$this->styles = $value;
+	}
+
+	public function getModelOfTheWorld()
+	{
+		return $this->model_of_the_world;
+	}
+
+	public function setModelOfTheWorld($value)
+	{
+		$this->model_of_the_world = $value;
+	}
+}
+
+/**
+* se modifica el Board con un movimiento
+*/
+class ModifyBoard extends ReasoningTask
+{
+	private $working_memory;
+	function __construct()
+	{
+
+	}
+
+	public function run()
+	{
+		$cells 		= $this->getModelOfTheWorld()->getBoard()->getCells();
+		$position 	= $this->getPosition();
+		$this->getModelOfTheWorld()->getBoard()->setData( $position[0], $position[1], $this->getToken() );
+		$this->getModelOfTheWorld()->updateModelOfTheWorld();
+	}
+
+	public function getModelOfTheWorld()
+	{
+		return $this->model_of_the_world;
+	}
+
+	public function setModelOfTheWorld($value)
+	{
+		$this->model_of_the_world = $value;
+	}
+
+}
+
 
 /**
 * Extend Reasoning Task
@@ -382,7 +454,7 @@ class CategorizationAlgorithmStrategy extends ComputationalStrategy
 		$board = $this->getModelOfTheWorld()->getBoard()->getCells();
 		//se recorren las categorias
 		foreach ($this->getCategories() as $category) {
-			if( strtoupper($board[$information[0]][$information[1]]) == strtoupper($category['value']) )
+			if( eval( "return '" . strtoupper($board[$information[0]][$information[1]]) . "' " . $category['symbol'] . " '" . strtoupper($category['value']) . "';" ) )
 			{
 				if( !in_array( $category['name'] , $categories) )
 				{
@@ -390,7 +462,6 @@ class CategorizationAlgorithmStrategy extends ComputationalStrategy
 				}
 			}
 		}
-		print_r($categories);
 		return $categories;
 	}
 

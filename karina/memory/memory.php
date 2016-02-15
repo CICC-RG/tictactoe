@@ -181,11 +181,29 @@
 	class WorkingMemory extends Memory
 	{
 		private $bcpu;
+		private $model_of_the_world;
+		private $profiles = [];
 		
 		function __construct()
 		{
-			
+			if( !empty($_SESSION['bcpu']) )
+			{
+				$this->setBCPU( unserialize($_SESSION['bcpu']) );
+			}
+
+			if( !empty($_SESSION['model_of_the_world']) )
+			{
+				$this->setBCPU( unserialize($_SESSION['model_of_the_world']) );
+			}
+
+			if( !empty($_SESSION['profiles']) )
+			{
+				foreach ($_SESSION['profiles'] as $profile) {
+					$this->setProfiles( unserialize($profile) );
+				}
+			}
 		}
+
 
 		public function storeInformation($fields, $values)
 		{
@@ -198,13 +216,52 @@
 
 		}
 
+		private function sync()
+		{
+			$this->setBCPU( unserialize($_SESSION['bcpu']) );
+			$this->setModelOfTheWorld( unserialize($_SESSION['model_of_the_world']) );
+			if( !empty($_SESSION['profiles']) )
+			{
+				foreach ($_SESSION['profiles'] as $profile) {
+					$this->setProfiles( unserialize($profile) );
+				}
+				
+			}
+		}
+
+		public function setProfiles($value)
+		{
+			$_SESSION['profiles'][] = serialize($value);
+			$this->profiles[] = $value;
+		}
+
+		public function getProfiles($id)
+		{
+			$this->sync();
+			return $this->profiles[$id];
+		}
+
+		public function getModelOfTheWorld()
+		{
+			$this->sync();
+			return $this->model_of_the_world;
+		}
+
+		public function setModelOfTheWorld($value)
+		{
+			$_SESSION['model_of_the_world'] = serialize($value);
+			$this->model_of_the_world = $value;
+		}
+
 		public function setBCPU($value)
 		{
+			$_SESSION['bcpu'] = serialize($value);
 			$this->bcpu = $value;
 		}
 
 		public function getBCPU()
 		{
+			$this->sync();
 			return $this->bcpu;
 		}
 	}

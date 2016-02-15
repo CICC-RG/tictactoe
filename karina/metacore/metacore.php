@@ -172,6 +172,45 @@
 		}		
 	}
 
+	class Plan extends Element {
+		private $actions;
+		private $current_action = 0;
+
+		public function executePlan(){
+			do {
+				$ca = $this->getCurrentAction();
+				$this->getAction()[ $ca ]->run();
+				$this->setCurrrentAction( $ca++ );
+			}while( $this->getCurrentAction() < $this->getActionLength() );
+
+		}
+
+		public function getActionLength()
+		{
+			return count( $this->getAction() );
+		}
+
+		public function getAction()
+		{
+			return $this->actions;
+		}
+
+		public function setAction($value)
+		{
+			$this->actions = $value;
+		}
+
+		public function getCurrentAction()
+		{
+			return $this->current_action;
+		}
+
+		public function setCurrrentAction($value)
+		{
+			$this->current_action = $value;
+		}
+	}
+
 	class Goal extends Element{
 		public $current_state;
 		public $target_state;
