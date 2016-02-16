@@ -179,8 +179,9 @@
 		public function executePlan(){
 			do {
 				$ca = $this->getCurrentAction();
+				echo "Action: ". get_class($this->getAction()[ $ca ]) . "<br>";
 				$this->getAction()[ $ca ]->run();
-				$this->setCurrrentAction( $ca++ );
+				$this->setCurrrentAction( $ca+1 );
 			}while( $this->getCurrentAction() < $this->getActionLength() );
 
 		}
@@ -196,6 +197,11 @@
 		}
 
 		public function setAction($value)
+		{
+			$this->actions[] = $value;
+		}
+
+		public function setActions($value)
 		{
 			$this->actions = $value;
 		}

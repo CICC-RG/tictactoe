@@ -163,12 +163,12 @@
 
 		public function processInformation($value)
 		{
-			$information 		= $value['bcpu']->getPerception()->getInput()->getInformation();
+			$information 		= $value['bcpu']->getInput()->getInformation();
 			$categories 		= $this->getCategories();
 			$algorithmStrategy 	= new $value['algorithmStrategy']($categories, $information, $value['modelOfTheWorld']);
 			$categorization 	= $algorithmStrategy->run();
 			
-			$value['bcpu']->getPerception()->addCategories($categorization);
+			$value['bcpu']->addCategories($categorization);
 			return $value['bcpu'];
 		}
 
@@ -208,14 +208,14 @@
 
 		public function processInformation($value)
 		{
-			$information 		= $value['bcpu']->getPerception()->getInput()->getInformation();
+			$information 		= $value['bcpu']->getInput()->getInformation();
 			$algorithmStrategy 	= new $value['algorithmStrategy']($information);
 			$reconition 		= $algorithmStrategy->run();
 
 			//esto es hay que cambiarlo por IA!!!
 			$perceptual_memory = new PerceptualMemory;
 			$perceptual_memory->storeInformation(['value', 'recognized'], [ $information , $reconition ]);
-			$value['bcpu']->getPerception()->addPattern($reconition);
+			$value['bcpu']->addPattern($reconition);
 			return $value['bcpu'];
 		}
 

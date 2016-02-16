@@ -69,10 +69,10 @@
 			
 			$this->forgetInformation($result);
 
-			$new_perception = new Perception;
+			$bcpu = new BasicCognitiveProcessingUnit;
 			//$position 	= explode('_', $result['information']);
-			$new_perception->processInformation( [ 'information' => $result['information'], 'type_sensor' => $result['type']]);
-			return $new_perception;
+			$bcpu->addInput( $result['information'], $result['type'] );
+			return $bcpu;
 		}
 
 		public function forgetInformation($cue)
@@ -193,7 +193,7 @@
 
 			if( !empty($_SESSION['model_of_the_world']) )
 			{
-				$this->setBCPU( unserialize($_SESSION['model_of_the_world']) );
+				$this->setModelOfTheWorld( unserialize($_SESSION['model_of_the_world']) );
 			}
 
 			if( !empty($_SESSION['profiles']) )
@@ -216,17 +216,14 @@
 
 		}
 
-		private function sync()
+		public function syncBCPU($value)
 		{
-			$this->setBCPU( unserialize($_SESSION['bcpu']) );
-			$this->setModelOfTheWorld( unserialize($_SESSION['model_of_the_world']) );
-			if( !empty($_SESSION['profiles']) )
-			{
-				foreach ($_SESSION['profiles'] as $profile) {
-					$this->setProfiles( unserialize($profile) );
-				}
-				
-			}
+			$_SESSION['bcpu'] = serialize($value);
+		}
+
+		public function syncModelOfTheWorld($value)
+		{
+			$_SESSION['model_of_the_world'] = serialize($value);
 		}
 
 		public function setProfiles($value)
@@ -236,32 +233,29 @@
 		}
 
 		public function getProfiles($id)
-		{
-			$this->sync();
+		{		
 			return $this->profiles[$id];
 		}
 
 		public function getModelOfTheWorld()
 		{
-			$this->sync();
 			return $this->model_of_the_world;
 		}
 
 		public function setModelOfTheWorld($value)
 		{
-			$_SESSION['model_of_the_world'] = serialize($value);
+			$this->syncModelOfTheWorld($value);
 			$this->model_of_the_world = $value;
 		}
 
 		public function setBCPU($value)
 		{
-			$_SESSION['bcpu'] = serialize($value);
+			$this->syncBCPU($value);
 			$this->bcpu = $value;
 		}
 
 		public function getBCPU()
 		{
-			$this->sync();
 			return $this->bcpu;
 		}
 	}

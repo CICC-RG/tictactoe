@@ -93,6 +93,7 @@ class ModelOfTheWorld
 
 	public function updateModelOfTheWorld()
 	{
+		//$_SESSION['model_of_the_world'] = serialize($this);
 		$_SESSION['cells'] = $this->getBoard()->getCells();
 		$_SESSION['is_created'] = $this->getStateIsCreated();
 	}
@@ -224,19 +225,19 @@ class PlayerMovement extends MouseSensor
 /**
 * Muestra el board
 */
-class ShowBoard extends ReasoningTask
+class ShowWorld extends Action
 {
-	private $model_of_the_world;
+	private $working_memory;
 	private $styles;
-	function __construct($model_of_the_world, $styles = [])
+	function __construct($styles = [])
 	{
-		$this->setModelOfTheWorld($model_of_the_world);
 		$this->setStyles($styles);
 	}
 
 	public function run()
 	{
-		ViewBoard::showBoard($this->getModelOfTheWorld()->getBoard()->getCells(), $this->getStyles());
+		$this->setWorkingMemory( new WorkingMemory );
+		ViewBoard::showBoard($this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells(), $this->getStyles());
 	}
 
 	public function getStyles()
@@ -249,14 +250,14 @@ class ShowBoard extends ReasoningTask
 		$this->styles = $value;
 	}
 
-	public function getModelOfTheWorld()
+	public function getWorkingMemory()
 	{
-		return $this->model_of_the_world;
+		return $this->working_memory;
 	}
 
-	public function setModelOfTheWorld($value)
+	public function setWorkingMemory($value)
 	{
-		$this->model_of_the_world = $value;
+		$this->working_memory = $value;
 	}
 }
 
@@ -273,22 +274,56 @@ class ModifyBoard extends ReasoningTask
 
 	public function run()
 	{
-		$cells 		= $this->getModelOfTheWorld()->getBoard()->getCells();
-		$position 	= $this->getPosition();
-		$this->getModelOfTheWorld()->getBoard()->setData( $position[0], $position[1], $this->getToken() );
-		$this->getModelOfTheWorld()->updateModelOfTheWorld();
+		$this->setWorkingMemory(new WorkingMemory);
+
+		$cells 		= $this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells();
+		$position 	= $this->getWorkingMemory()->getBCPU()->getInput()->getInformation();
+		$position   = explode("_", $position);
+		$this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->setData( $position[0], $position[1], $this->getWorkingMemory()->getModelOfTheWorld()->currentToken() );
+		$this->getWorkingMemory()->getModelOfTheWorld()->updateModelOfTheWorld();
+		$this->getWorkingMemory()->setModelOfTheWorld($this->getWorkingMemory()->getModelOfTheWorld());
 	}
 
-	public function getModelOfTheWorld()
+	public function getWorkingMemory()
 	{
-		return $this->model_of_the_world;
+		return $this->working_memory;
 	}
 
-	public function setModelOfTheWorld($value)
+	public function setWorkingMemory($value)
 	{
-		$this->model_of_the_world = $value;
+		$this->working_memory = $value;
 	}
 
+}
+
+/**
+* se cambia el turno al siguiente jugador
+*/
+class ChangeTurn extends ReasoningTask
+{
+	private $working_memory;
+	
+	function __construct()
+	{
+		
+	}
+
+	public function run()
+	{
+		$this->setWorkingMemory(new WorkingMemory);
+		$this->getWorkingMemory()->getModelOfTheWorld()->changeTurn();
+		$this->getWorkingMemory()->syncModelOfTheWorld( $this->getWorkingMemory()->getModelOfTheWorld() );
+	}
+
+	public function getWorkingMemory()
+	{
+		return $this->working_memory;
+	}
+
+	public function setWorkingMemory($value)
+	{
+		$this->working_memory = $value;
+	}
 }
 
 
@@ -297,21 +332,28 @@ class ModifyBoard extends ReasoningTask
 */
 class VerifyWinner extends ReasoningTask
 {
-	private $ModelOfTheWorld;
-	private $token;
+	private $working_memory;
 
 	
-	function __construct($ModelOfTheWorld, $token)
+	function __construct()
 	{
-		$this->ModelOfTheWorld = $ModelOfTheWorld;
-		$this->token = $token;
+	}
+
+	public function setWorkingMemory($value)
+	{
+		$this->working_memory = $value;
+	}
+
+	public function getWorkingMemory()
+	{
+		return $this->working_memory;
 	}
 
 	public function run()
 	{
-		
-   		$columns 	= $this->transposition($this->ModelOfTheWorld->getCells());
-   		$temp 		= $this->diagonal($this->ModelOfTheWorld->getCells());
+		$this->setWorkingMemory(new WorkingMemory);
+   		$columns 	= $this->transposition($this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells());
+   		$temp 		= $this->diagonal($this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells());
    		
    		
    		$diagonal 	= $temp[0];
@@ -320,8 +362,8 @@ class VerifyWinner extends ReasoningTask
 
    		for ($i=0; $i < 3; $i++) { 
    			//ganador en cualquier fila
-   			$row  			= $this->ModelOfTheWorld->getCells()[$i];
-   			$count_token 	= $this->tell( $row, $this->token);
+   			$row  			= $this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells()[$i];
+   			$count_token 	= $this->tell( $row, $this->getWorkingMemory()->getModelOfTheWorld()->currentToken());
 
    			if( $count_token == 3 )
    				return true;
@@ -330,14 +372,14 @@ class VerifyWinner extends ReasoningTask
    		for ($i=0; $i < 3; $i++) { 
    			//ganador en la columna
    			$column  		= $columns[$i];
-   			$count_token 	= $this->tell( $column, $this->token);
+   			$count_token 	= $this->tell( $column, $this->getWorkingMemory()->getModelOfTheWorld()->currentToken());
 
    			if( $count_token == 3 )
    				return true;
    		}
 
-   		$count_d = $this->tell($diagonal, $this->token);
-   		$count_t = $this->tell($cross, $this->token);
+   		$count_d = $this->tell($diagonal, $this->getWorkingMemory()->getModelOfTheWorld()->currentToken());
+   		$count_t = $this->tell($cross, $this->getWorkingMemory()->getModelOfTheWorld()->currentToken());
 
    		//ganador en la digonal
    		if( $count_d == 3 )
@@ -390,45 +432,37 @@ class VerifyWinner extends ReasoningTask
 */
 class MachinePlays extends ReasoningTask
 {
-	private $board;
+	private $working_memory;
 	private $tasks;
 	
-	function __construct($board)
+	function __construct()
 	{
 
-		$this->setBoard($board);
-		$this->addStrategy( new RandomAlgorithmStrategy($this->getBoard()->getBoard()->getCells()) );
-		$this->addStrategy( new MinMaxAlgorithmStrategy($this->getBoard()->getBoard()->getCells()) );
-		//$this->setToken($token);
 	}
 
 	public function run()
 	{
-		$cells = $this->getBoard()->getBoard()->getCells();
-   		$strategy = new RandomAlgorithmStrategy($cells);
-   		$this->buildProfile();
-   		return $strategy->run();
+		$this->setWorkingMemory(new WorkingMemory);
+
+		//$this->addStrategy( new RandomAlgorithmStrategy($this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells()) );
+		//$this->addStrategy( new MinMaxAlgorithmStrategy($this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells()) );
+   		$strategy = new RandomAlgorithmStrategy($this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->getCells());
+   		//$this->buildProfile();
+   		$position = $strategy->run();
+   		$this->getWorkingMemory()->getModelOfTheWorld()->getBoard()->setData($position[0], $position[1],$this->working_memory->getModelOfTheWorld()->currentToken());
+		$this->getWorkingMemory()->getModelOfTheWorld()->updateModelOfTheWorld();
+		$this->getWorkingMemory()->setModelOfTheWorld($this->getWorkingMemory()->getModelOfTheWorld());}
+
+	public function setWorkingMemory($value)
+	{
+		$this->working_memory = $value;
 	}
 
-	public function setBoard($value)
+	public function getWorkingMemory()
 	{
-		$this->board = $value;
+		return $this->working_memory;
 	}
 
-	public function getBoard()
-	{
-		return $this->board;
-	}
-
-	public function setToken($value)
-	{
-		$this->token = $value;
-	}
-
-	public function getToken()
-	{
-		return $this->token;
-	}
 }
 
 

@@ -14,12 +14,16 @@
 	{
 		$reasoner->reset();
 	}
+	echo "perception<br>";
 	if($reasoner->perception())
 	{
+		echo "planning<br>";
 		$reasoner->planning();
+		echo "execute plan<br>";
 		$reasoner->run();
 	}
 
+	echo "show world<br>";
 	$reasoner->showBoard();
 
 ?>
