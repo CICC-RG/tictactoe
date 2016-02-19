@@ -183,6 +183,7 @@
 		private $bcpu;
 		private $model_of_the_world;
 		private $profiles = [];
+		private $mental_state = [];
 		
 		function __construct()
 		{
@@ -199,7 +200,14 @@
 			if( !empty($_SESSION['profiles']) )
 			{
 				foreach ($_SESSION['profiles'] as $profile) {
-					$this->setProfiles( unserialize($profile) );
+					$this->setProfiles( unserialize($profile), true );
+				}
+			}
+
+			if( !empty($_SESSION['mental_state']) )
+			{
+				foreach ($_SESSION['mental_state'] as $mental_state) {
+					$this->setMentalState( unserialize($mental_state));
 				}
 			}
 		}
@@ -226,10 +234,18 @@
 			$_SESSION['model_of_the_world'] = serialize($value);
 		}
 
-		public function setProfiles($value)
+		public function setProfiles($value, $s = false)
 		{
-			$_SESSION['profiles'][] = serialize($value);
+			if( !$s )
+				$_SESSION['profiles'][] = serialize($value);
 			$this->profiles[] = $value;
+		}
+
+		public function setMentalState($value, $s = false)
+		{
+			if( !$s )
+				$_SESSION['mental_state'][] = serialize($value);
+			$this->mental_state[] = $value;
 		}
 
 		public function getProfiles($id)

@@ -7,6 +7,18 @@
 	require_once 'karina/memory/memory.php';
 
 
+	$working_memory  = new WorkingMemory;
+	$working_memory->setMentalState( new State('is_system_started'), true );
+	$working_memory->setMentalState( new State('is_perceived'), false );
+	$working_memory->setMentalState( new State('is_board_modified'), false );
+	$working_memory->setMentalState( new State('is_player_winner_verified'), false );
+	$working_memory->setMentalState( new State('is_player_turn_changed'), false );
+	$working_memory->setMentalState( new State('is_machine_played'), false );
+	$working_memory->setMentalState( new State('is_machine_winner_verified'), false );
+	$working_memory->setMentalState( new State('is_machine_turn_changed'), false );
+	$working_memory->setMentalState( new State('is_world_shown'), false );
+
+
 	//require_once 'objectlevel/models/models.php';
 	//call controller
 	$reasoner = new Reasoner;
